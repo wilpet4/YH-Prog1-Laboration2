@@ -11,6 +11,7 @@ namespace Laboration2
             {
                 parkingGarage[i] = ""; // Tilldelar alla platser ett värde för att förhindra fel med null.
             }
+            parkingGarage[99] = "CAR#ASD123";
             bool isRunning = true;
             while (isRunning)
             {
@@ -29,14 +30,14 @@ namespace Laboration2
                     switch (menuChoice)
                     {
                         case 1:
-                            if (IsGarageFull(parkingGarage))
+                            if (IsGarageFull())
                             {
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 Console.WriteLine("Det finns inga lediga p-platser!");
                                 Console.ForegroundColor = ConsoleColor.White;
                                 System.Threading.Thread.Sleep(1800);
                             }
-                            else if (!IsGarageFull(parkingGarage))
+                            else if (!IsGarageFull())
                             {
                                 Console.WriteLine("Vill du registrera en bil eller motorcykel?\n" +
                                                   "[1] Bil.\n" +
@@ -48,7 +49,7 @@ namespace Laboration2
                                     string registrationNumber = Console.ReadLine();
                                     if (registrationNumber.Length <= 10)
                                     {
-                                        Console.WriteLine(RegisterNewVehicle("CAR", registrationNumber, parkingGarage));
+                                        Console.WriteLine(RegisterNewVehicle("CAR", registrationNumber));
                                         Console.ReadLine();
                                     }
                                 }
@@ -58,7 +59,7 @@ namespace Laboration2
                                     string registrationNumber = Console.ReadLine();
                                     if (registrationNumber.Length <= 10)
                                     {
-                                        Console.WriteLine(RegisterNewVehicle("MC", registrationNumber, parkingGarage));
+                                        Console.WriteLine(RegisterNewVehicle("MC", registrationNumber));
                                         Console.ReadLine();
                                     }
                                 }
@@ -85,14 +86,31 @@ namespace Laboration2
                             }
                             break;
                         case 3:
+                            Console.Write("Ange från vilken plats du vill flytta ett fordon: ");
+                            if (Int32.TryParse(Console.ReadLine(), out userChoice) && userChoice < parkingGarage.Length + 1)
+                            {
+                                Console.WriteLine($"Till vilken plats vill du flytta {parkingGarage[userChoice - 1]}?");
+                                if (Int32.TryParse(Console.ReadLine(), out userChoice) && userChoice < parkingGarage.Length + 1)
+                                {
+                                    //TODO
+                                }
+                                else
+                                {
+                                    InputErrorMessage();
+                                }
+                            }
+                            else
+                            {
+                                InputErrorMessage();
+                            }
                             break;
                         case 4:
                             Console.Write("Mata in registreringsnummret på fordonet du vill söka efter: "); 
                             string regSearch = Console.ReadLine();
-                            (bool isFound, int index) searchResults = Search(regSearch.ToUpper(), parkingGarage);
+                            (bool isFound, int index) searchResults = Search(regSearch.ToUpper());
                             if (searchResults.isFound)
                             {
-                                Console.WriteLine("Fordonet hittades i parkeringen!");
+                                Console.WriteLine($"Fordonet {parkingGarage[searchResults.index]} hittades på plats {searchResults.index + 1}!");
                                 Console.ReadLine();
                             }
                             else
@@ -100,7 +118,7 @@ namespace Laboration2
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 Console.WriteLine("Fordonet hittades inte i parkeringen!");
                                 Console.ForegroundColor = ConsoleColor.White;
-                                System.Threading.Thread.Sleep(1800);
+                                Console.ReadLine();
                             }
                             break;
                         case 5:
@@ -131,7 +149,56 @@ namespace Laboration2
                 {
                     InputErrorMessage();
                 }
-                //isRunning = false;
+            }
+            string RegisterNewVehicle(in string vehicleType, in string registrationNumber)
+            {
+                string[] strings = { vehicleType, registrationNumber };
+                string vehicleID = string.Join("#", strings);
+                for (int i = 0; i < parkingGarage.Length; i++)
+                {
+                    if (parkingGarage[i] == "")
+                    {
+                        parkingGarage[i] = vehicleID;
+                        string returnMessage = $"{vehicleID} är nu registrerad på plats {i + 1}";
+                        return returnMessage;
+                    }
+                }
+                return null;
+            }
+            bool IsGarageFull()
+            {
+                int fullSpots = 0;
+                int emptySpots = 0;
+                for (int i = 0; i < parkingGarage.Length; i++)
+                {
+                    if (parkingGarage[i] == "")
+                    {
+                        emptySpots++;
+                    }
+                    else
+                    {
+                        fullSpots++;
+                    }
+                }
+                if (emptySpots > 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            (bool isFound, int index) Search(in string registrationNumber) // Hittade detta intressanta sättet att returnera
+            {                                                              // mer än en variabel och ville verkligen testa det.
+                for (int i = 0; i < parkingGarage.Length; i++)
+                {
+                    if (parkingGarage[i].Contains(registrationNumber))
+                    {
+                        return (true, i);
+                    }
+                }
+                return (false, 0);
             }
         }
         static void InputErrorMessage()
@@ -140,57 +207,7 @@ namespace Laboration2
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Fel vid inmatning, försök igen!");
             Console.ForegroundColor = ConsoleColor.White;
-            System.Threading.Thread.Sleep(1800);
-        }
-        static string RegisterNewVehicle(in string vehicleType, in string registrationNumber, in string[] parkingGarage)
-        {
-            string[] strings = { vehicleType, registrationNumber };
-            string vehicleID = string.Join("#", strings);
-            for (int i = 0; i < parkingGarage.Length; i++)
-            {
-                if (parkingGarage[i] == "")
-                {
-                    parkingGarage[i] = vehicleID;
-                    string returnMessage = $"{vehicleID} är nu registrerad på plats {i + 1}";
-                    return returnMessage;
-                }
-            }
-            return null;
-        }
-        static bool IsGarageFull(in string[] parkingGarage)
-        {
-            int fullSpots = 0;
-            int emptySpots = 0;
-            for (int i = 0; i < parkingGarage.Length; i++)
-            {
-                if (parkingGarage[i] == "")
-                {
-                    emptySpots++;
-                }
-                else
-                {
-                    fullSpots++;
-                }
-            }
-            if (emptySpots > 0)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-        static (bool isFound, int index) Search(in string registrationNumber, in string[] parkingGarage) // Hittade detta intressanta sättet att returnera
-        {                                                                                                // mer än en variabel och ville verkligen testa det.
-            for (int i = 0; i < parkingGarage.Length; i++)
-            {
-                if (parkingGarage[i].Contains(registrationNumber))
-                {
-                    return (true, i);
-                }
-            }
-            return (false, 0);
+            Console.ReadLine();
         }
     }
 }
