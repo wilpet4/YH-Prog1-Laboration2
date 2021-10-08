@@ -11,7 +11,7 @@ namespace Laboration2
             {
                 parkingGarage[i] = ""; // Tilldelar alla platser ett värde för att förhindra fel med null.
             }
-            parkingGarage[99] = "CAR#ASD123";
+            parkingGarage[99] = "CAR#ASD123"; //TEST
             bool isRunning = true;
             while (isRunning)
             {
@@ -21,7 +21,8 @@ namespace Laboration2
                                   "[2] Hämta ut fordon.\n" +
                                   "[3] Flytta fordon.\n" +
                                   "[4] Sök efter fordon.\n" +
-                                  "[5] Visa alla p-platser.\n");
+                                  "[5] Visa alla p-platser.\n" +
+                                  "[6] Avsluta programmet.");
                 Console.Write("Mata in siffran för motsvarande ärende: ");
                 if (Int32.TryParse(Console.ReadLine(), out int menuChoice))
                 {
@@ -87,17 +88,38 @@ namespace Laboration2
                             break;
                         case 3:
                             Console.Write("Ange från vilken plats du vill flytta ett fordon: ");
-                            if (Int32.TryParse(Console.ReadLine(), out userChoice) && userChoice < parkingGarage.Length + 1)
+                            bool parseSuccess = Int32.TryParse(Console.ReadLine(), out userChoice);
+                            if (parseSuccess && userChoice < parkingGarage.Length + 1 && userChoice > 0 && parkingGarage[userChoice - 1] != "")
                             {
                                 Console.WriteLine($"Till vilken plats vill du flytta {parkingGarage[userChoice - 1]}?");
-                                if (Int32.TryParse(Console.ReadLine(), out userChoice) && userChoice < parkingGarage.Length + 1)
+                                int fromIndex = userChoice - 1;
+                                parseSuccess = Int32.TryParse(Console.ReadLine(), out userChoice);
+                                if (parseSuccess && userChoice < parkingGarage.Length + 1 && parkingGarage[userChoice - 1] == "")
                                 {
-                                    //TODO
+                                    int toIndex = userChoice - 1;
+                                    parkingGarage[toIndex] = parkingGarage[fromIndex];
+                                    parkingGarage[fromIndex] = "";
+
+
+                                }
+                                else if (parseSuccess && parkingGarage[userChoice - 1] != "")
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine("P-platsen är redan upptagen av ett annat fordon!");
+                                    Console.ForegroundColor = ConsoleColor.White;
+                                    Console.ReadLine();
                                 }
                                 else
                                 {
                                     InputErrorMessage();
                                 }
+                            }
+                            else if (parseSuccess && parkingGarage[userChoice - 1] == "")
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("Det finns inget fordon att flytta på p-platsen!");
+                                Console.ForegroundColor = ConsoleColor.White;
+                                Console.ReadLine();
                             }
                             else
                             {
@@ -140,6 +162,9 @@ namespace Laboration2
                             }
                             Console.WriteLine("\nTryck på 'Enter' för att gå tillbaka till menyn...");
                             Console.ReadLine();
+                            break;
+                        case 6:
+                            isRunning = false;
                             break;
                         default:
                             break;
