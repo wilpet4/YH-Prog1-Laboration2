@@ -79,11 +79,19 @@ namespace Laboration2
                             {
                                 Console.Write("Mata in registreringsnummret på bilen du vill hämta ut: ");
                                 string search = Console.ReadLine();
+                                Console.WriteLine(RemoveVehicle("CAR", search));
+                                Console.ReadLine();
                             }
                             else if (userChoice == 2)
                             {
                                 Console.Write("Mata in registreringsnummret på motorcykeln du vill hämta ut: ");
                                 string search = Console.ReadLine();
+                                Console.WriteLine(RemoveVehicle("MC", search));
+                                Console.ReadLine();
+                            }
+                            else
+                            {
+                                InputErrorMessage();
                             }
                             break;
                         case 3:
@@ -183,12 +191,46 @@ namespace Laboration2
                 {
                     if (parkingGarage[i] == "")
                     {
-                        parkingGarage[i] = vehicleID;
-                        string returnMessage = $"{vehicleID} är nu registrerad på plats {i + 1}";
+                        parkingGarage[i] = vehicleID.ToUpper();
+                        string returnMessage = $"{vehicleID} är nu registrerad på plats {i + 1}!";
+                        return returnMessage;
+                    }
+                    else if (vehicleType == "MC" && parkingGarage[i].Contains("MC#") && parkingGarage[i].Contains('|') == false)
+                    {
+                        parkingGarage[i] += $"|{vehicleID}".ToUpper();
+                        string returnMessage = $"{vehicleID} är nu registrerad på plats {i + 1}!";
                         return returnMessage;
                     }
                 }
                 return null;
+            }
+            string RemoveVehicle(in string vehicleType, in string registrationNumber)
+            {
+                (bool isFound, int index) searchResults = Search(registrationNumber.ToUpper());
+                if (searchResults.isFound && parkingGarage[searchResults.index].Contains($"{vehicleType}#"))
+                {
+                    if (parkingGarage[searchResults.index].Contains('|'))
+                    {
+                        string findIndexOfString = vehicleType + "#" + registrationNumber.ToUpper();
+                        int lengthOfString = findIndexOfString.ToCharArray().Length;
+                        int indexOfVehicle = parkingGarage[searchResults.index].IndexOf(findIndexOfString);
+                        string returnMessage = $"{parkingGarage[searchResults.index].Substring(indexOfVehicle, lengthOfString)} har nu hämtats ut från plats {searchResults.index + 1}!";
+                        parkingGarage[searchResults.index] = parkingGarage[searchResults.index].Remove(indexOfVehicle, lengthOfString);
+                        parkingGarage[searchResults.index] = parkingGarage[searchResults.index].Replace("|", string.Empty);
+                        return returnMessage;
+                    }
+                    else
+                    {
+                        string returnMessage = $"{parkingGarage[searchResults.index]} har nu hämtats ut från plats {searchResults.index + 1}!";
+                        parkingGarage[searchResults.index] = "";
+                        return returnMessage;
+                    }
+                }
+                else
+                {
+                    string returnMessage = "Fordonet hittades inte i parkeringen!";
+                    return returnMessage;
+                }
             }
             bool IsGarageFull()
             {
