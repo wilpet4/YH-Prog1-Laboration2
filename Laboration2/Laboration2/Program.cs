@@ -107,27 +107,52 @@ namespace Laboration2
                             bool parseSuccess = Int32.TryParse(Console.ReadLine(), out userChoice);
                             if (parseSuccess && userChoice < parkingGarage.Length + 1 && userChoice > 0 && parkingGarage[userChoice - 1] != "")
                             {
-                                Console.WriteLine($"Till vilken plats vill du flytta {parkingGarage[userChoice - 1]}?");
-                                int fromIndex = userChoice - 1;
-                                parseSuccess = Int32.TryParse(Console.ReadLine(), out userChoice);
-                                if (parseSuccess && userChoice < parkingGarage.Length + 1 && parkingGarage[userChoice - 1] == "")
+                                if (parkingGarage[userChoice - 1].Contains("|"))
                                 {
-                                    int toIndex = userChoice - 1;
-                                    parkingGarage[toIndex] = parkingGarage[fromIndex];
-                                    parkingGarage[fromIndex] = "";
-
-
-                                }
-                                else if (parseSuccess && parkingGarage[userChoice - 1] != "")
-                                {
-                                    Console.ForegroundColor = ConsoleColor.Red;
-                                    Console.WriteLine("P-platsen är redan upptagen av ett annat fordon!");
-                                    Console.ForegroundColor = ConsoleColor.White;
-                                    Console.ReadLine();
+                                    string firstMC = parkingGarage[userChoice - 1].Substring(0, parkingGarage[userChoice - 1].IndexOf("|"));
+                                    string secondMC = parkingGarage[userChoice - 1].Substring(parkingGarage[userChoice - 1].IndexOf("|") + 1);
+                                    //TODO: FLYTTA ENSTAKA MC FRÅN PLATS SOM INNEHÅLLER 2
+                                    Console.WriteLine("Det finns 2 motorcyklar på denna plats, vilken vill du välja?");
+                                    Console.WriteLine($"[1] {firstMC}\n" +
+                                                      $"[2] {secondMC}");
+                                    Int32.TryParse(Console.ReadLine(), out int input);
+                                    if (input == 1)
+                                    {
+                                        //TODO: PLOCKA FRAM FÖRSTA MC'N
+                                    }
+                                    else if (input == 2)
+                                    {
+                                        //TODO: PLOCKA FRAM ANDRA MC'N
+                                    }
+                                    else
+                                    {
+                                        InputErrorMessage();
+                                    }
                                 }
                                 else
                                 {
-                                    InputErrorMessage();
+                                    Console.WriteLine($"Till vilken plats vill du flytta {parkingGarage[userChoice - 1]}?");
+                                    int fromIndex = userChoice - 1;
+                                    parseSuccess = Int32.TryParse(Console.ReadLine(), out userChoice);
+                                    if (parseSuccess && userChoice < parkingGarage.Length + 1 && parkingGarage[userChoice - 1] == "")
+                                    {
+                                        int toIndex = userChoice - 1;
+                                        parkingGarage[toIndex] = parkingGarage[fromIndex];
+                                        parkingGarage[fromIndex] = "";
+
+
+                                    }
+                                    else if (parseSuccess && parkingGarage[userChoice - 1] != "")
+                                    {
+                                        Console.ForegroundColor = ConsoleColor.Red;
+                                        Console.WriteLine("P-platsen är redan upptagen av ett annat fordon!");
+                                        Console.ForegroundColor = ConsoleColor.White;
+                                        Console.ReadLine();
+                                    }
+                                    else
+                                    {
+                                        InputErrorMessage();
+                                    }
                                 }
                             }
                             else if (parseSuccess && parkingGarage[userChoice - 1] == "")
