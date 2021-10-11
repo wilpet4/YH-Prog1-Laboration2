@@ -38,7 +38,7 @@ namespace Laboration2
                                 Console.ForegroundColor = ConsoleColor.White;
                                 System.Threading.Thread.Sleep(1800);
                             }
-                            else if (!IsGarageFull())
+                            else if (IsGarageFull() == false)
                             {
                                 Console.WriteLine("Vill du registrera en bil eller motorcykel?\n" +
                                                   "[1] Bil.\n" +
@@ -53,6 +53,10 @@ namespace Laboration2
                                         Console.WriteLine(RegisterNewVehicle("CAR", registrationNumber));
                                         Console.ReadLine();
                                     }
+                                    else
+                                    {
+                                        InputErrorMessage();
+                                    }
                                 }
                                 else if (vehicleChoice == 2)
                                 {
@@ -62,6 +66,10 @@ namespace Laboration2
                                     {
                                         Console.WriteLine(RegisterNewVehicle("MC", registrationNumber));
                                         Console.ReadLine();
+                                    }
+                                    else
+                                    {
+                                        InputErrorMessage();
                                     }
                                 }
                                 else
@@ -157,8 +165,8 @@ namespace Laboration2
                             {
                                 if (i < 9)
                                 {
-                                    Console.WriteLine($"Plats {i + 1}:   {parkingGarage[i]}");
-                                }
+                                    Console.WriteLine($"Plats {i + 1}:   {parkingGarage[i]}"); // Använder extra mellanslag för att göra så att alla utmatningar
+                                }                                                              // hamnar på samma plats i konsolen oavsett om 1, 10, eller 100 står innan.
                                 if (i >= 9 && i < 99)
                                 {
                                     Console.WriteLine($"Plats {i + 1}:  {parkingGarage[i]}");
@@ -268,8 +276,8 @@ namespace Laboration2
                 return (false, 0);
             }
         }
-        static void InputErrorMessage()
-        {
+        static void InputErrorMessage() // Enkelt error-meddelande som jag använder mig av varje gång 
+        {                               // användaren matar in något oönskat.
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Fel vid inmatning, försök igen!");
