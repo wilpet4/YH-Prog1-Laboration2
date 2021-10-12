@@ -155,7 +155,7 @@ namespace Laboration2
                                     }
                                 }
                             }
-                            else if (parseSuccess && parkingGarage[userChoice - 1] == "")
+                            else if (parseSuccess && userChoice > 0 && parkingGarage[userChoice - 1] == "")
                             {
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 Console.WriteLine("Det finns inget fordon att flytta på p-platsen!");
