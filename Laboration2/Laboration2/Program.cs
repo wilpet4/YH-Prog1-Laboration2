@@ -2,6 +2,7 @@
 
 namespace Laboration2
 {
+    // GITHUB: https://github.com/wilpet4/YH-Prog1-Laboration2.git
     class Program
     {
         public static void Main(string[] args)
@@ -11,7 +12,6 @@ namespace Laboration2
             {
                 parkingGarage[i] = ""; // Tilldelar alla platser ett värde för att förhindra fel med null.
             }
-            parkingGarage[99] = "CAR#ASD123"; //TEST
             bool isRunning = true;
             while (isRunning)
             {
@@ -107,22 +107,59 @@ namespace Laboration2
                             bool parseSuccess = Int32.TryParse(Console.ReadLine(), out userChoice);
                             if (parseSuccess && userChoice < parkingGarage.Length + 1 && userChoice > 0 && parkingGarage[userChoice - 1] != "")
                             {
-                                if (parkingGarage[userChoice - 1].Contains("|"))
+                                if (parkingGarage[userChoice - 1].Contains("|")) // OM det finns två mc på platsen man vill flytta ifrån.
                                 {
                                     string firstMC = parkingGarage[userChoice - 1].Substring(0, parkingGarage[userChoice - 1].IndexOf("|"));
                                     string secondMC = parkingGarage[userChoice - 1].Substring(parkingGarage[userChoice - 1].IndexOf("|") + 1);
-                                    //TODO: FLYTTA ENSTAKA MC FRÅN PLATS SOM INNEHÅLLER 2
                                     Console.WriteLine("Det finns 2 motorcyklar på denna plats, vilken vill du välja?");
                                     Console.WriteLine($"[1] {firstMC}\n" +
                                                       $"[2] {secondMC}");
                                     Int32.TryParse(Console.ReadLine(), out int input);
                                     if (input == 1)
                                     {
-                                        //TODO: PLOCKA FRAM FÖRSTA MC'N
+                                        Console.WriteLine($"Till vilken plats vill du flytta {firstMC}?");
+                                        int fromIndex = userChoice - 1;
+                                        parseSuccess = Int32.TryParse(Console.ReadLine(), out userChoice);
+                                        if (parseSuccess && userChoice < parkingGarage.Length + 1 && parkingGarage[userChoice - 1] == "") // OM platsen att flytta till är tom.
+                                        {
+                                            int toIndex = userChoice - 1;
+                                            parkingGarage[toIndex] += firstMC;
+                                            parkingGarage[fromIndex] = secondMC;
+                                            Console.WriteLine($"{firstMC} har flyttats tills plats {userChoice}!");
+
+
+                                        }
+                                        else if (parseSuccess && userChoice < parkingGarage.Length + 1 && parkingGarage[userChoice - 1].Contains("MC")) // OM platsen innehåller en MC.
+                                        {
+                                            int toIndex = userChoice - 1;
+                                            parkingGarage[toIndex] += $"|{firstMC}";
+                                            parkingGarage[fromIndex] = secondMC;
+                                            Console.WriteLine($"{firstMC} har flyttats tills plats {userChoice}!");
+                                        }
+                                        Console.ReadLine();
                                     }
                                     else if (input == 2)
                                     {
-                                        //TODO: PLOCKA FRAM ANDRA MC'N
+                                        Console.WriteLine($"Till vilken plats vill du flytta {secondMC}?");
+                                        int fromIndex = userChoice - 1;
+                                        parseSuccess = Int32.TryParse(Console.ReadLine(), out userChoice);
+                                        if (parseSuccess && userChoice < parkingGarage.Length + 1 && parkingGarage[userChoice - 1] == "")
+                                        {
+                                            int toIndex = userChoice - 1;
+                                            parkingGarage[toIndex] += secondMC;
+                                            parkingGarage[fromIndex] = firstMC;
+                                            Console.WriteLine($"{secondMC} har flyttats tills plats {userChoice}!");
+
+
+                                        }
+                                        else if (parseSuccess && userChoice < parkingGarage.Length + 1 && parkingGarage[userChoice - 1].Contains("MC"))
+                                        {
+                                            int toIndex = userChoice - 1;
+                                            parkingGarage[toIndex] += $"|{secondMC}";
+                                            parkingGarage[fromIndex] = firstMC;
+                                            Console.WriteLine($"{secondMC} har flyttats tills plats {userChoice}!");
+                                        }
+                                        Console.ReadLine();
                                     }
                                     else
                                     {
@@ -139,8 +176,17 @@ namespace Laboration2
                                         int toIndex = userChoice - 1;
                                         parkingGarage[toIndex] = parkingGarage[fromIndex];
                                         parkingGarage[fromIndex] = "";
-
-
+                                        Console.WriteLine($"{parkingGarage[fromIndex]} har flyttats till plats {userChoice}!");
+                                        Console.ReadLine();
+                                    }
+                                    // ANNARS OM användaren vill flytta en MC till en plats som redan innehåller en MC.
+                                    else if (parseSuccess && userChoice < parkingGarage.Length + 1 && parkingGarage[userChoice - 1].Contains("MC#") && !parkingGarage[userChoice - 1].Contains("|") && !parkingGarage[fromIndex].Contains("CAR#"))
+                                    {
+                                        int toIndex = userChoice - 1;
+                                        parkingGarage[toIndex] += $"|{parkingGarage[fromIndex]}";
+                                        parkingGarage[fromIndex] = "";
+                                        Console.WriteLine($"{parkingGarage[fromIndex]} har flyttats till plats {userChoice}!");
+                                        Console.ReadLine();
                                     }
                                     else if (parseSuccess && parkingGarage[userChoice - 1] != "")
                                     {
@@ -155,7 +201,7 @@ namespace Laboration2
                                     }
                                 }
                             }
-                            else if (parseSuccess && userChoice > 0 && parkingGarage[userChoice - 1] == "")
+                            else if (parseSuccess && userChoice > 0 && parkingGarage[userChoice - 1] == "") // OM platsen man vill flytta ett fordon ifrån är tomt.
                             {
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 Console.WriteLine("Det finns inget fordon att flytta på p-platsen!");
@@ -191,7 +237,7 @@ namespace Laboration2
                                 if (i < 9)
                                 {
                                     Console.WriteLine($"Plats {i + 1}:   {parkingGarage[i]}"); // Använder extra mellanslag för att göra så att alla utmatningar
-                                }                                                              // hamnar på samma plats i konsolen oavsett om 1, 10, eller 100 står innan.
+                                }                                                              // hamnar på samma plats i konsolen oavsett om platsnummret har en, två, eller tre siffror.
                                 if (i >= 9 && i < 99)
                                 {
                                     Console.WriteLine($"Plats {i + 1}:  {parkingGarage[i]}");
@@ -243,11 +289,12 @@ namespace Laboration2
                 if (searchResults.isFound && parkingGarage[searchResults.index].Contains($"{vehicleType}#"))
                 {
                     if (parkingGarage[searchResults.index].Contains('|'))
-                    {
+                    { // I denna if-sats hämtar jag start- och slutindex för motorcykeln som ska tas ut från platsen om det finns två på samma plats.
                         string findIndexOfString = vehicleType + "#" + registrationNumber.ToUpper();
                         int lengthOfString = findIndexOfString.ToCharArray().Length;
                         int indexOfVehicle = parkingGarage[searchResults.index].IndexOf(findIndexOfString);
                         string returnMessage = $"{parkingGarage[searchResults.index].Substring(indexOfVehicle, lengthOfString)} har nu hämtats ut från plats {searchResults.index + 1}!";
+
                         parkingGarage[searchResults.index] = parkingGarage[searchResults.index].Remove(indexOfVehicle, lengthOfString);
                         parkingGarage[searchResults.index] = parkingGarage[searchResults.index].Replace("|", string.Empty);
                         return returnMessage;
