@@ -105,8 +105,8 @@ namespace Laboration2
                         case 3:
                             Console.Write("Ange från vilken plats du vill flytta ett fordon: ");
                             bool parseSuccess = Int32.TryParse(Console.ReadLine(), out userChoice);
-                            if (parseSuccess && userChoice < parkingGarage.Length + 1 && userChoice > 0 && parkingGarage[userChoice - 1] != "")
-                            {
+                            if (parseSuccess && userChoice < parkingGarage.Length + 1 && userChoice > 0 && parkingGarage[userChoice - 1] != "") // I dessa if-satsen controllerar jag alltid
+                            {                                                                                                                   // att inmatning gick igenom parse och är över 0.
                                 if (parkingGarage[userChoice - 1].Contains("|")) // OM det finns två mc på platsen man vill flytta ifrån.
                                 {
                                     string firstMC = parkingGarage[userChoice - 1].Substring(0, parkingGarage[userChoice - 1].IndexOf("|"));
@@ -149,8 +149,7 @@ namespace Laboration2
                                             parkingGarage[toIndex] += secondMC;
                                             parkingGarage[fromIndex] = firstMC;
                                             Console.WriteLine($"{secondMC} har flyttats tills plats {userChoice}!");
-
-
+                                            Console.ReadLine();
                                         }
                                         else if (parseSuccess && userChoice < parkingGarage.Length + 1 && parkingGarage[userChoice - 1].Contains("MC"))
                                         {
@@ -158,8 +157,12 @@ namespace Laboration2
                                             parkingGarage[toIndex] += $"|{secondMC}";
                                             parkingGarage[fromIndex] = firstMC;
                                             Console.WriteLine($"{secondMC} har flyttats tills plats {userChoice}!");
+                                            Console.ReadLine();
                                         }
-                                        Console.ReadLine();
+                                        else
+                                        {
+                                            InputErrorMessage();
+                                        }
                                     }
                                     else
                                     {
@@ -219,7 +222,8 @@ namespace Laboration2
                             (bool isFound, int index) searchResults = Search(regSearch.ToUpper());
                             if (searchResults.isFound)
                             {
-                                Console.WriteLine($"Fordonet {parkingGarage[searchResults.index]} hittades på plats {searchResults.index + 1}!");
+                                Console.WriteLine($"Sökningen hittade fordon på plats {searchResults.index + 1}!" +
+                                                  $"\nPlats {searchResults.index + 1} innehåller {parkingGarage[searchResults.index]}.");
                                 Console.ReadLine();
                             }
                             else
@@ -265,10 +269,10 @@ namespace Laboration2
             string RegisterNewVehicle(in string vehicleType, in string registrationNumber)
             {
                 string[] strings = { vehicleType, registrationNumber };
-                string vehicleID = string.Join("#", strings);
+                string vehicleID = string.Join("#", strings); // Sätter ihop fordonstypen med regnummer.
                 for (int i = 0; i < parkingGarage.Length; i++)
                 {
-                    if (parkingGarage[i] == "")
+                    if (parkingGarage[i] == "") //Om platsen är tom så registreras fordonet på den platsen.
                     {
                         parkingGarage[i] = vehicleID.ToUpper();
                         string returnMessage = $"{vehicleID} är nu registrerad på plats {i + 1}!";
@@ -312,7 +316,7 @@ namespace Laboration2
                     return returnMessage;
                 }
             }
-            bool IsGarageFull()
+            bool IsGarageFull() // Stegar enkelt igenom parkeringen och returnerar false om en enda tom plats hittas.
             {
                 int fullSpots = 0;
                 int emptySpots = 0;
